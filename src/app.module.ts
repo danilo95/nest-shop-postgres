@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module.js';
 import { CommonModule } from './common/common.module.js';
@@ -10,21 +10,28 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { AuthModule } from './auth/auth.module.js';
 import { MessagesWsModule } from './messages-ws/messages-ws.module.js';
+import { validateEnv } from './config/env.schema.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: +`${process.env.DB_PORT}`,
-      database: process.env.DB_NAME,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      autoLoadEntities: true,
-      synchronize: Boolean(process.env.SYNC),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: validateEnv,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.getOrThrow<string>('DB_HOST'),
+        port: config.getOrThrow<number>('DB_PORT'),
+        database: config.getOrThrow<string>('DB_NAME'),
+        username: config.getOrThrow<string>('DB_USERNAME'),
+        password: config.getOrThrow<string>('DB_PASSWORD'),
+        autoLoadEntities: true,
+        synchronize: config.getOrThrow<boolean>('SYNC'),
+      }),
     }),
 
     ServeStaticModule.forRoot({
