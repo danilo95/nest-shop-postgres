@@ -16,6 +16,8 @@ import { fileNamer } from './helpers/fileNamer.js';
 import express from 'express';
 import { ConfigService } from '@nestjs/config';
 
+const maxProductImageBytes = 10 * 1024 * 1024;
+
 @Controller('files')
 export class FilesController {
   constructor(
@@ -36,7 +38,8 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter,
-      //limits: { fileSize: 10000 },
+      // Busboy signals the limit when the stream reaches it.
+      limits: { fileSize: maxProductImageBytes + 1 },
       storage: diskStorage({
         destination: './static/products',
         filename: fileNamer,
@@ -48,9 +51,8 @@ export class FilesController {
       throw new BadRequestException('File is empty');
     }
 
-    // const secureUrl = `${file.filename}`;
-
-    const secureUrl = `${this.configService.get('HOST_API')}/files/product/${file.filename}`;
+    const host = this.configService.get<string>('HOST_API')?.trim().replace(/\/+$/, '') || '/api';
+    const secureUrl = `${host}/files/product/${file.filename}`;
 
     return {
       fileName: secureUrl,
