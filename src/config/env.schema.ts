@@ -20,6 +20,10 @@ export const envSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535),
   HOST_API: z.string().trim().url(),
   JWT_SECRET: z.string().min(16, 'JWT_SECRET debe tener al menos 16 caracteres'),
+  PAYPAL_CLIENT_ID: z.string().min(1).optional(),
+  PAYPAL_CLIENT_SECRET: z.string().min(1).optional(),
+  PAYPAL_BASE_URL: z.string().url().default('https://api-m.sandbox.paypal.com'),
+  PAYPAL_CURRENCY: z.string().length(3).default('USD'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

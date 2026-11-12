@@ -21,6 +21,14 @@ async function bootstrap() {
     .setTitle('Shop Restful API')
     .setDescription('Shop description')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, documentConfig);
   SwaggerModule.setup('api', app, documentFactory);

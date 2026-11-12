@@ -6,6 +6,7 @@ import { Purchase } from './entities/purchase.entity.js';
 import { PurchaseItem } from './entities/purchase-item.entity.js';
 import { ShopController } from './shop.controller.js';
 import { ShopService } from './shop.service.js';
+import { PayPalService } from './paypal.service.js';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { ShopService } from './shop.service.js';
     TypeOrmModule.forFeature([Product, Purchase, PurchaseItem]),
   ],
   controllers: [ShopController],
-  providers: [ShopService],
+  providers: [ShopService, PayPalService],
 })
 export class ShopModule {}

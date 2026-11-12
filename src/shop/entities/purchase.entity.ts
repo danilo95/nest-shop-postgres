@@ -10,6 +10,12 @@ import {
 import type { User } from '../../auth/entities/user.entity.js';
 import type { PurchaseItem } from './purchase-item.entity.js';
 
+export enum PurchaseStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  CANCELLED = 'CANCELLED',
+}
+
 @Entity({ name: 'purchases' })
 export class Purchase {
   @PrimaryGeneratedColumn('uuid')
@@ -33,4 +39,17 @@ export class Purchase {
 
   @Column('float')
   total: number;
+
+  @Column({
+    type: 'enum',
+    enum: PurchaseStatus,
+    default: PurchaseStatus.PAID,
+  })
+  status: PurchaseStatus;
+
+  @Column({ nullable: true, unique: true })
+  paypalOrderId?: string;
+
+  @Column({ nullable: true })
+  paypalCaptureId?: string;
 }
