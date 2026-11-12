@@ -52,3 +52,79 @@ También incorpora comunicación en tiempo real mediante WebSockets para el inte
 
 
 Se puede usar como template para dar inicio aun proyecto
+
+## Configuración de base de datos
+
+En desarrollo se puede utilizar `SYNC=true` para que TypeORM sincronice las entidades automáticamente. En producción debe utilizarse:
+
+```env
+SYNC=false
+```
+
+La configuración que utiliza el CLI de TypeORM se encuentra en [`src/database/data-source.ts`](./src/database/data-source.ts). Esta configuración tiene `synchronize: false` y registra las entidades y migraciones del proyecto.
+
+## Migraciones
+
+Las migraciones crean y modifican la estructura de la base de datos. No se debe depender de `synchronize` en producción.
+
+### Crear la migración inicial
+
+La migración inicial debe generarse comparando las entidades contra una base de datos vacía o contra una base controlada:
+
+```bash
+npm run migration:generate -- src/database/migrations/InitialSchema
+```
+
+El comando genera un archivo dentro de `src/database/migrations/`. Revisa ese archivo antes de subirlo al repositorio.
+
+### Ejecutar migraciones
+
+```bash
+npm run migration:run
+```
+
+El comando compila el proyecto y ejecuta las migraciones pendientes usando la conexión definida en `.env`. TypeORM registra las migraciones ejecutadas en la tabla `typeorm_migrations`.
+
+### Crear una migración para un cambio nuevo
+
+Después de modificar una entidad, genera una migración con un nombre descriptivo:
+
+```bash
+npm run migration:generate -- src/database/migrations/AddPayPalAndPurchaseStatus
+npm run migration:run
+```
+
+Otros ejemplos:
+
+```bash
+npm run migration:generate -- src/database/migrations/AddPurchasePagination
+npm run migration:generate -- src/database/migrations/AddShippingAddress
+```
+
+### Revertir la última migración
+
+Solo debe utilizarse con cuidado y después de verificar el impacto:
+
+```bash
+npm run migration:revert
+```
+
+### Despliegue en producción
+
+El orden recomendado es:
+
+```bash
+npm ci
+npm run migration:run
+npm run start:prod
+```
+
+La variable `SYNC` debe permanecer en `false`. Las migraciones deben ejecutarse como un paso explícito del despliegue, antes de iniciar la aplicación.
+
+Si la base de producción ya fue creada anteriormente con `SYNC=true`, no ejecutes directamente una migración inicial que intente crear tablas que ya existen. Primero realiza una estrategia de baseline o genera la migración desde una base limpia y verifica el estado de la base existente.
+
+## Seed de datos
+
+El seed disponible en [`src/seed/seed.service.ts`](./src/seed/seed.service.ts) es únicamente para desarrollo: elimina usuarios y productos antes de insertar los datos iniciales. No debe ejecutarse en producción.
+
+Las migraciones deben utilizarse para cambios de esquema. Para datos iniciales de producción se recomienda un seed no destructivo, una migración específica de datos o una carga manual desde un panel administrativo.
