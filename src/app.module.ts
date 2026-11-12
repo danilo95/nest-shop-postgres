@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { AuthModule } from './auth/auth.module.js';
 import { MessagesWsModule } from './messages-ws/messages-ws.module.js';
 import { validateEnv } from './config/env.schema.js';
+import { ShopModule } from './shop/shop.module.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -43,6 +44,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
     FilesModule,
     AuthModule,
     MessagesWsModule,
+    ShopModule,
   ],
   controllers: [],
   providers: [],

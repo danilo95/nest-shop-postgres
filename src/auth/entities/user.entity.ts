@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import type { Product } from '../../products/entities/product.entity.js';
 import type { RefreshToken } from './refresh-token.entity.js';
+import type { Purchase } from '../../shop/entities/purchase.entity.js';
 
 @Entity('users')
 export class User {
@@ -41,4 +42,7 @@ export class User {
 
   @OneToMany('RefreshToken', (refreshToken: RefreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
+
+  @OneToMany('Purchase', (purchase: Purchase) => purchase.user)
+  purchases: Purchase[];
 }
