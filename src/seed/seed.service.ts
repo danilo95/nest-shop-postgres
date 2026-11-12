@@ -3,13 +3,15 @@ import { ProductsService } from '../products/products.service.js';
 import { initialData } from './data/seed-data.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../auth/entities/user.entity.js';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Purchase } from '../shop/entities/purchase.entity.js';
 
 @Injectable()
 export class SeedService {
   constructor(
     private readonly productService: ProductsService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async executeSeed() {
@@ -20,9 +22,15 @@ export class SeedService {
   }
 
   private async deleteTables() {
+    // Seed de desarrollo: elimina dependencias antes de eliminar usuarios.
+    // TypeORM no acepta .where({}) como criterio vacío.
+    await this.dataSource
+      .getRepository(Purchase)
+      .createQueryBuilder()
+      .delete()
+      .execute();
     await this.productService.deleteAllProducts();
-    const queryBuilder = this.userRepository.createQueryBuilder();
-    await queryBuilder.delete().where({}).execute();
+    await this.userRepository.createQueryBuilder().delete().execute();
   }
 
   private async inserUsers() {
