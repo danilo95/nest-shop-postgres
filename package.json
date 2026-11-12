@@ -10,6 +10,7 @@
     "build": "nest build",
     "migration:generate": "yarn build && typeorm migration:generate -d dist/database/data-source.js",
     "migration:run": "yarn build && typeorm migration:run -d dist/database/data-source.js",
+    "migration:run:prod": "typeorm migration:run -d dist/database/data-source.js",
     "migration:revert": "yarn build && typeorm migration:revert -d dist/database/data-source.js",
     "deploy": "nest deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

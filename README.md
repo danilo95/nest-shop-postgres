@@ -43,13 +43,11 @@ http://localhost:3000/api/executeseed
 
 6. `yarn start:dev`
 
-
 ## Proyecto
 
 NestShop es una API REST para una tienda en línea desarrollada con NestJS, TypeScript, PostgreSQL y TypeORM. El proyecto permite administrar productos, imágenes, usuarios y autenticación, incluyendo operaciones CRUD, paginación, búsqueda por título, slug o identificador, validación de datos y manejo de errores.
 
 También incorpora comunicación en tiempo real mediante WebSockets para el intercambio de mensajes entre clientes conectados. La arquitectura está organizada por módulos y utiliza DTOs, servicios, controladores, repositorios y transacciones para mantener un código escalable y fácil de mantener.
-
 
 Se puede usar como template para dar inicio aun proyecto
 
@@ -72,7 +70,7 @@ Las migraciones crean y modifican la estructura de la base de datos. No se debe 
 La migración inicial debe generarse comparando las entidades contra una base de datos vacía o contra una base controlada:
 
 ```bash
-npm run migration:generate -- src/database/migrations/InitialSchema
+yarn migration:generate -- src/database/migrations/InitialSchema
 ```
 
 El comando genera un archivo dentro de `src/database/migrations/`. Revisa ese archivo antes de subirlo al repositorio.
@@ -80,7 +78,7 @@ El comando genera un archivo dentro de `src/database/migrations/`. Revisa ese ar
 ### Ejecutar migraciones
 
 ```bash
-npm run migration:run
+yarn migration:run
 ```
 
 El comando compila el proyecto y ejecuta las migraciones pendientes usando la conexión definida en `.env`. TypeORM registra las migraciones ejecutadas en la tabla `typeorm_migrations`.
@@ -90,15 +88,15 @@ El comando compila el proyecto y ejecuta las migraciones pendientes usando la co
 Después de modificar una entidad, genera una migración con un nombre descriptivo:
 
 ```bash
-npm run migration:generate -- src/database/migrations/AddPayPalAndPurchaseStatus
-npm run migration:run
+yarn migration:generate -- src/database/migrations/AddPayPalAndPurchaseStatus
+yarn migration:run
 ```
 
 Otros ejemplos:
 
 ```bash
-npm run migration:generate -- src/database/migrations/AddPurchasePagination
-npm run migration:generate -- src/database/migrations/AddShippingAddress
+yarn migration:generate -- src/database/migrations/AddPurchasePagination
+yarn migration:generate -- src/database/migrations/AddShippingAddress
 ```
 
 ### Revertir la última migración
@@ -106,7 +104,7 @@ npm run migration:generate -- src/database/migrations/AddShippingAddress
 Solo debe utilizarse con cuidado y después de verificar el impacto:
 
 ```bash
-npm run migration:revert
+yarn migration:revert
 ```
 
 ### Despliegue en producción
@@ -114,9 +112,12 @@ npm run migration:revert
 El orden recomendado es:
 
 ```bash
-npm ci
-npm run migration:run
-npm run start:prod
+yarn install --frozen-lockfile
+yarn build
+yarn migration:run:prod
+yarn start:prod
+```
+
 ```
 
 La variable `SYNC` debe permanecer en `false`. Las migraciones deben ejecutarse como un paso explícito del despliegue, antes de iniciar la aplicación.
@@ -128,3 +129,4 @@ Si la base de producción ya fue creada anteriormente con `SYNC=true`, no ejecut
 El seed disponible en [`src/seed/seed.service.ts`](./src/seed/seed.service.ts) es únicamente para desarrollo: elimina usuarios y productos antes de insertar los datos iniciales. No debe ejecutarse en producción.
 
 Las migraciones deben utilizarse para cambios de esquema. Para datos iniciales de producción se recomienda un seed no destructivo, una migración específica de datos o una carga manual desde un panel administrativo.
+```
