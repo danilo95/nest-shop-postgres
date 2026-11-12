@@ -18,7 +18,7 @@ type ValidTypes = 'shirts' | 'pants' | 'hoodies' | 'hats';
 
 interface SeedUser {
   email: string;
-  fullname: string;
+  fullName: string;
   password: string;
   roles: string[];
 }
@@ -31,8 +31,8 @@ interface SeedData {
 export const initialData: SeedData = {
   users: [
     {
-      email: 'test1@gtmail.com',
-      fullname: 'test',
+      email: 'test1@gmail.com',
+      fullName: 'test',
       password: bcrypt.hashSync('ABC123@', 10),
       roles: ['admin'],
     },
