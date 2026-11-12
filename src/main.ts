@@ -30,11 +30,12 @@ async function bootstrap() {
       'access-token',
     )
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, documentConfig);
+  const documentFactory = () =>
+    SwaggerModule.createDocument(app, documentConfig);
   SwaggerModule.setup('api', app, documentFactory);
 
   const port = configService.getOrThrow<number>('PORT');
-  await app.listen(port);
-  logger.log(`App Running on port ${port}`);
+  await app.listen(port || 3000);
+  logger.log(`App Running on port ${port || 3000}`);
 }
 await bootstrap();

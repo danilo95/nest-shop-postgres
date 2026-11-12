@@ -25,11 +25,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.getOrThrow<string>('DB_HOST'),
-        port: config.getOrThrow<number>('DB_PORT'),
-        database: config.getOrThrow<string>('DB_NAME'),
-        username: config.getOrThrow<string>('DB_USERNAME'),
-        password: config.getOrThrow<string>('DB_PASSWORD'),
+        ...(config.get<string>('DATABASE_URL')
+          ? {
+              url: config.getOrThrow<string>('DATABASE_URL'),
+              ssl: { rejectUnauthorized: false },
+            }
+          : {
+              host: config.getOrThrow<string>('DB_HOST'),
+              port: config.getOrThrow<number>('DB_PORT'),
+              database: config.getOrThrow<string>('DB_NAME'),
+              username: config.getOrThrow<string>('DB_USERNAME'),
+              password: config.getOrThrow<string>('DB_PASSWORD'),
+              ssl: config.getOrThrow<string>('STAGE') === 'prod'
+                ? { rejectUnauthorized: false }
+                : false,
+            }),
         autoLoadEntities: true,
         synchronize: config.getOrThrow<boolean>('SYNC'),
       }),
